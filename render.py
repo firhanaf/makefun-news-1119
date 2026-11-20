@@ -185,16 +185,17 @@ def render(path="entry.png"):
     lx = 290
     d.text((lx, 150), "LEAD · ASIA / INTERNATIONAL LAW", font=font("arialbd.ttf", 16), fill=RED)
     y = text_block(d, lx, 174, "UN's top court rules Myanmar committed genocide against the Rohingya",
-                   "georgiab.ttf", 40, W - lx - 36, 3, INK, 1.12)
-    text_block(d, lx, y + 8,
-               "First time the ICJ has found a state responsible for genocide. The case, brought by The Gambia "
-               "in 2019, covered the army's 2017 campaign that drove some 700,000 Rohingya into Bangladesh.",
-               "arial.ttf", 19, W - lx - 36, 3, GREY)
-    d.line([32, 342, W - 32, 342], fill=INK, width=1)
+                   "georgiab.ttf", 36, W - lx - 36, 2, INK, 1.12)
+    y = text_block(d, lx, y + 6,
+                   "First time the ICJ has found a state responsible for genocide. The case, brought by The Gambia "
+                   "in 2019, covered the army's 2017 campaign that drove some 700,000 Rohingya into Bangladesh.",
+                   "arial.ttf", 18, W - lx - 36, 3, GREY)
+    lead_end = max(y, 310) + 10
+    d.line([32, lead_end, W - 32, lead_end], fill=INK, width=1)
 
     # 2 x 3 grid of stories
-    top, cols, rows = 352, 3, 2
-    cw, ch = (W - 64) // cols, 262
+    top, cols, rows = lead_end + 10, 3, 2
+    cw, ch = (W - 64) // cols, 252
     for i, (tag, icon, head, sub) in enumerate(STORIES):
         c, r = i % cols, i // cols
         x0, y0 = 32 + c * cw, top + r * ch
@@ -209,11 +210,15 @@ def render(path="entry.png"):
     by = top + rows * ch + 2
     d.rectangle([32, by, W - 32, by + 30], fill=INK)
     d.text((44, by + 15), "ALSO ON 19 NOVEMBER", font=font("arialbd.ttf", 16), fill=PAPER, anchor="lm")
-    f = font("arial.ttf", 16)
+    # briefs flow down two columns, each line shrunk to fit its column
+    colw = (W - 88) // 2
     for i, b in enumerate(BRIEFS):
-        col, row = i % 2, i // 2
-        bx, yy = 44 + col * 480, by + 40 + row * 24
+        col, row = (0, i) if i < 3 else (1, i - 3)
+        bx, yy = 44 + col * (colw + 12), by + 40 + row * 24
+        f, _ = fit(d, "■ " + b, "arial.ttf", 16, colw, 1)
         d.text((bx, yy), "■ " + b, font=f, fill=INK)
+    d.text((W // 2, H - 22), "Events that happened or were first reported on 19 Nov 2026 · "
+           "compiled from Reuters, Al Jazeera and wire reports", font=font("ariali.ttf", 13), fill=GREY, anchor="mb")
 
     d.rectangle([0, H - 8, W, H], fill=RED)
     im.save(path, optimize=True)
